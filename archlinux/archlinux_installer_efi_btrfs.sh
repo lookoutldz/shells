@@ -99,7 +99,7 @@ sed -i '10 i Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch' /etc
 pacman-key --init && pacman -Sy archlinux-keyring && \
 pacman -Syy  && \
 pacstrap -K /mnt base linux linux-firmware base-devel linux-headers \
-  networkmanager dhcpcd openssh vim git curl wget lsof htop tree zsh zsh-completions snapper lm_sensors \
+  networkmanager dhcpcd openssh vim git curl wget lsof htop tree zsh zsh-completions lm_sensors \
   grub efibootmgr intel-ucode bluez bluez-utils man-db man-pages && \
 
 # 写入 fstab
