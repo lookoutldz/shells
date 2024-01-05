@@ -1,8 +1,9 @@
 #!/bin/sh
 
 # 所用参数
-HOST_NAME="myarch"
+HOST_NAME="archserver"
 DEFAULT_USER="archer"
+LINUXROOT_PARTITION="/dev/nvme0n1p3"
 
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
@@ -12,6 +13,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     --defaultuser=*)
       DEFAULT_USER="${1#*=}"
+      ;;
+    --linuxroot=*)
+      LINUXROOT_PARTITION="${1#*=}"
       ;;
     *)
       echo "Unknown parameter: $1"
@@ -75,6 +79,29 @@ git clone https://aur.archlinux.org/yay.git && \
 sudo chown -R $DEFAULT_USER:users ./yay && \
 cd yay && \
 sudo -u $DEFAULT_USER makepkg -si
+
+# 启用温度传感器
+sensors-detect --auto
+
+
+# 启用自动快照
+# 配置 snapper, 删除默认子卷
+snapper -c root create-config / && \
+btrfs subvolume delete /.snapshots && \
+mount -o subvolid=5 $LINUXROOT_PARTITION ~/rootsub && \
+# 让 snapper 使用 @snapshots 子卷, 更新 fstab 文件
+{head -n 9 /etc/fstab; tail -n 10 /etc/fstab;} > /etc/fstab.tmp && \
+sed -i '12s#/home#/.snapshots#; 12s#257#258#; 12s#@home#@snapshots#' fstab.tmp && \
+rm /etc/fstab && mv fstab.tmp /etc/fstab && \
+mkdir /.snapshots && \
+mount -a && \
+cat /etc/fstab && \
+chmod 750 /.snapshots && \
+# 创建初始快照
+snapper create --description "Initial Snapshot by Initializing Script."
+# 开启Snapper自动快照和自动清理
+sudo systemctl enable --now snapper-timeline.timer
+sudo systemctl enable --now snapper-cleanup.timer
 
 # 配置完成, 回到介质请手动 umount /mnt 后重启, 即可进入新系统
 echo "Setting new system completed."

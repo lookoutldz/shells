@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # 默认的设备和分区变量
-EFI_PARTITION=""
-SWAP_PARTITION=""
-LINUXROOT_PARTITION=""
+EFI_PARTITION="/dev/nvme0n1p1"
+SWAP_PARTITION="/dev/nvme0n1p2"
+LINUXROOT_PARTITION="/dev/nvme0n1p3"
 # 可选参数
-BTRFS_LABEL="myarch"
-HOST_NAME="myarch"
+BTRFS_LABEL="archserver"
+HOST_NAME="archserver"
 DEFAULT_USER="archer"
 
 # 解析命令行参数
@@ -61,6 +61,7 @@ mkfs.btrfs -L $BTRFS_LABEL $LINUXROOT_PARTITION && \
 mount -t btrfs -o compress=zstd $LINUXROOT_PARTITION /mnt  && \
 btrfs subvolume create /mnt/@ && \
 btrfs subvolume create /mnt/@home && \
+btrfs subvolume create /mnt/@snapshots && \
 btrfs subvolume list -p /mnt && \
 umount /mnt && \
 
@@ -85,9 +86,12 @@ cat /mnt/etc/fstab  && \
 # 安装初步完成, 进入配置环节, 检查配置脚本存在性以决定是否自动配置
 INIT_SCRIPT="archlinux_initializer_efi.sh"
 if [ -e $INIT_SCRIPT ]; then
+    curl -sfL https://raw.githubusercontent.com/lookoutldz/shells/my-n200/archlinux/archlinux_initializer_efi.sh | > $INIT_SCRIPT
+fi
+if [ -e $INIT_SCRIPT ]; then
     chmod +x $INIT_SCRIPT && \
     cp $INIT_SCRIPT /mnt && \
-    arch-chroot /mnt /$INIT_SCRIPT --hostname=$HOST_NAME --defaultuser=$DEFAULT_USER
+    arch-chroot /mnt /$INIT_SCRIPT --hostname=$HOST_NAME --defaultuser=$DEFAULT_USER --linuxroot=$LINUXROOT_PARTITION
 else
     echo "Initial script $INIT_SCRIPT does not exist, use 'arch-chroot /mnt' get into linux and setting manually."
 fi
