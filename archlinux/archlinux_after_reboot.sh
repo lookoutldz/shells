@@ -28,7 +28,7 @@ sudo pacman -Syu
 sudo pacman -S snapper --needed && \
 sudo snapper -c root create-config / && \
 sudo btrfs subvolume delete /.snapshots && \
-sudo mount -o subvolid=5 $LINUXROOT_PARTITION ~/rootsub && \
+sudo mount -o subvolid=5 $LINUXROOT_PARTITION ~/rootsub --mkdir && \
 # 让 snapper 使用 @snapshots 子卷, 更新 fstab 文件
 {head -n 9 /etc/fstab; tail -n 10 /etc/fstab;} > fstab.tmp && \
 sed -i '12s#/home#/.snapshots#; 12s#257#258#; 12s#@home#@snapshots#' fstab.tmp && \
