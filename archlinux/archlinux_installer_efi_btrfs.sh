@@ -1,9 +1,14 @@
 #!/bin/sh
 
 # 默认的设备和分区变量
+DEVICE="/dev/nvme0n1"
 EFI_PARTITION="/dev/nvme0n1p1"
 SWAP_PARTITION="/dev/nvme0n1p2"
 LINUXROOT_PARTITION="/dev/nvme0n1p3"
+
+EFI_SIZE_GB="1"
+SWAP_SIZE_GB="16"
+
 # 可选参数
 BTRFS_LABEL="archserver"
 HOST_NAME="archserver"
@@ -15,8 +20,14 @@ while [[ $# -gt 0 ]]; do
     --efi=*)
       EFI_PARTITION="${1#*=}"
       ;;
+    --efi-size=*)
+      EFI_PARTITION="${1#*=}"
+      ;;
     --swap=*)
       SWAP_PARTITION="${1#*=}"
+      ;;
+    --swap-size=*)
+      EFI_PARTITION="${1#*=}"
       ;;
     --linuxroot=*)
       LINUXROOT_PARTITION="${1#*=}"
@@ -51,6 +62,18 @@ echo "Linuxroot partition (will be mounted on /): $LINUXROOT_PARTITION"
 echo "Btrfs partition label: $BTRFS_LABEL"
 echo "Hostname: $HOST_NAME"
 echo "Default user: $DEFAULT_USER"
+
+# 自动化分区
+# 创建 GPT 分区表
+parted $DEVICE mklabel gpt && \
+# 创建 EFI 分区
+parted $DEVICE mkpart primary fat32 1MiB ${EFI_SIZE_GB}GB && \
+# 设置 EFI 分区为引导分区
+parted $DEVICE set 1 esp on && \
+# 创建 Swap 分区
+parted $DEVICE mkpart primary linux-swap ${EFI_SIZE_GB}GB $((EFI_SIZE_GB + SWAP_SIZE_GB))GB && \
+# 创建 Linux 系统分区（剩余空间）
+parted $DEVICE mkpart primary $((EFI_SIZE_GB + SWAP_SIZE_GB))GB 100% && \
 
 # 格式化分区
 mkfs.fat -F32 $EFI_PARTITION && \
