@@ -83,8 +83,8 @@ genfstab -U /mnt >> /mnt/etc/fstab  && \
 cat /mnt/etc/fstab  && \
 
 # 安装初步完成, 进入配置环节, 下载脚本, 检查配置脚本存在性以决定是否自动配置
-INIT_SCRIPT="archlinux_initializer_efi.sh"
-curl -sfL https://raw.githubusercontent.com/lookoutldz/shells/my-vbox/archlinux/archlinux_initializer_efi.sh | > $INIT_SCRIPT
+INIT_SCRIPT="archlinux_initializer_efi.sh" && \
+curl -sfL https://raw.githubusercontent.com/lookoutldz/shells/my-vbox/archlinux/archlinux_initializer_efi.sh | > $INIT_SCRIPT && \
 if [ -e $INIT_SCRIPT ]; then
     chmod +x $INIT_SCRIPT && \
     cp $INIT_SCRIPT /mnt && \
