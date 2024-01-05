@@ -26,7 +26,7 @@ shells
 
 1. 先进行分区操作, 推荐使用 ``cfdisk`` 工具, 最终需要有 ``EFI``, ``swap``, ``/`` 分区, 因为这个是针对我的 N200 设备特化的, 所以三个区的设备名称是已知的, 分别为 ``/dev/nvme0n1p1``, ``/dev/nvme0n1p2``, ``/dev/nvme0n1p3``
 
-2. 在安装介质中执行命令 ``curl -sfL http://tinyurl.com/looko-archinstall-n200-sh | > install.sh && chmod +x install.sh && ./install.sh`` 即可 
+2. 在安装介质中执行命令 ``curl -sfL http://tinyurl.com/looko-archinstall-n200-sh -o install.sh && chmod +x install.sh && ./install.sh`` 即可 
 
 #### 旧(无网安装)
 
