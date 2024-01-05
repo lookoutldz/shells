@@ -110,7 +110,7 @@ cat /mnt/etc/fstab  && \
 INIT_SCRIPT="archlinux_initializer_efi.sh" && \
 if [ ! -e $INIT_SCRIPT ]; then
     curl -sfL https://raw.githubusercontent.com/lookoutldz/shells/my-n200/archlinux/archlinux_initializer_efi.sh | > $INIT_SCRIPT
-fi
+fi && \
 if [ -e $INIT_SCRIPT ]; then
     chmod +x $INIT_SCRIPT && \
     cp $INIT_SCRIPT /mnt && \
