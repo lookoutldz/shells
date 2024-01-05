@@ -78,7 +78,7 @@ parted $DEVICE mkpart primary $((EFI_SIZE_GB + SWAP_SIZE_GB))GB 100% && \
 # 格式化分区
 mkfs.fat -F32 $EFI_PARTITION && \
 mkswap $SWAP_PARTITION  && \
-mkfs.btrfs -L $BTRFS_LABEL $LINUXROOT_PARTITION && \
+mkfs.btrfs -L $BTRFS_LABEL -f $LINUXROOT_PARTITION && \
 
 # 创建 btrfs 子卷
 mount -t btrfs -o compress=zstd $LINUXROOT_PARTITION /mnt  && \
@@ -99,7 +99,7 @@ sed -i '10 i Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch' /etc
 pacman-key --init && pacman -Sy archlinux-keyring && \
 pacman -Syy  && \
 pacstrap -K /mnt base linux linux-firmware base-devel linux-headers \
-  networkmanager dhcpcd openssh vim git curl wget lsof htop tree zsh zsh-completions lm_sensors \
+  networkmanager dhcpcd openssh vim git curl wget lsof htop tree zsh zsh-completions snapper lm_sensors \
   grub efibootmgr intel-ucode bluez bluez-utils man-db man-pages && \
 
 # 写入 fstab
