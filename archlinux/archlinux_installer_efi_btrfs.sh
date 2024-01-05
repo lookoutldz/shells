@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # 默认的设备和分区变量
 DEVICE="/dev/nvme0n1"

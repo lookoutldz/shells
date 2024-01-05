@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # 所用参数
 HOST_NAME="archserver"
