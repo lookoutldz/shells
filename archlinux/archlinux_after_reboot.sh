@@ -20,9 +20,12 @@ done
 # 启用温度传感器
 sudo sensors-detect --auto
 
+# 更新系统
+sudo pacman -Syu
+
 # 启用自动快照
 # 配置 snapper, 删除默认子卷
-sudo pacman -S pacman --needed && \
+sudo pacman -S snapper --needed && \
 sudo snapper -c root create-config / && \
 sudo btrfs subvolume delete /.snapshots && \
 sudo mount -o subvolid=5 $LINUXROOT_PARTITION ~/rootsub && \
